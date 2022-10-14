@@ -7,4 +7,15 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="stateless" Version="5.11.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Utils.cs" />
+    <Compile Remove="LexicalAnalyzer.cs" />
+    <Compile Remove="Enums.cs" />
+    <Compile Remove="LexicalHelper.cs" />
+  </ItemGroup>
+
 </Project>

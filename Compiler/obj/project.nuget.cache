@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "j2bOHIcMBlZaJT9zQDC/PB4PGj0k2BUqpL42hLHS/47VLfKT5FknEA2elNF+ke1NkLHigh4NA2+1Ik5JNasxGg==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\GSa\\Desktop\\Compiler\\Compiler\\Compiler.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\GSa\\.nuget\\packages\\stateless\\5.11.0\\stateless.5.11.0.nupkg.sha512"
+  ],
+  "logs": []
+}
