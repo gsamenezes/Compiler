@@ -4,7 +4,7 @@ namespace Compiler;
 
 public class Scanner {
     private static HashSet<char> Separators => new() {' ', '\t', '\r', '\n', '\v', '\f'};
-    private static TokenProcessor Processor => new TokenProcessor(); // TODO: Thread safe
+    private static TokenProcessor Processor => new TokenProcessor();
 
     public static IReadOnlyCollection<TokenIdentifier> Run(string content) {
         var identifiers = new List<(int, char, string)>();

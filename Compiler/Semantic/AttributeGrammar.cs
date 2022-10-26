@@ -1,4 +1,5 @@
-﻿using Compiler.Tokens;
+﻿using System.Security.Cryptography.X509Certificates;
+using Compiler.Tokens;
 using static Compiler.Semantic.ErrorCode;
 using static Compiler.Semantic.ScopeAnalyzer;
 
@@ -88,7 +89,7 @@ public class AttributeGrammar {
     public static ObjectStruct s_bool_ = new ObjectStruct {eKind = t_kind.SCALAR_TYPE_, nName = -1, pNext = null};
     public static ObjectStruct s_string_ = new ObjectStruct {eKind = t_kind.SCALAR_TYPE_, nName = -1, pNext = null};
     public static ObjectStruct s_universal_ = new ObjectStruct {eKind = t_kind.SCALAR_TYPE_, nName = -1, pNext = null};
-
+    public static string GeneratedCode = "";
     public static void SemanticAnalysis(int rule, TokenIdentifier token) {
         #region Prop
         var StackSem = new Stack<t_attrib>();
@@ -141,8 +142,9 @@ public class AttributeGrammar {
 
         var tokenSecundario = token.SecondaryToken;
         #endregion
-
+        
         switch (rule) {
+
             case IDD_IDENTIFIER_RULE:
                 IDD_.nont = t_nterm.IDD;
                 name = tokenSecundario ?? -1;
@@ -455,7 +457,7 @@ public class AttributeGrammar {
                 f._.Function.pRetType = TP_._.T.type;
                 f._.Function.pParams = LP_._.LP.list;
                 f._.Function.nParams = LP_._.LP.nSize;
-
+                GeneratedCode += ($"BEGIN_FUNC {f._.Function.pParams} {f._.Function.nParams} \n");
                 break;
 
             case FUNCTION_IDD_NB_LP_TP_B_RULE:
@@ -465,6 +467,7 @@ public class AttributeGrammar {
                 break;
             case B_RULE:
                 EndBlock();
+                GeneratedCode += ("END_FUNC\n");
                 break;
             case IF_E_S_RULE:
                 E_ = StackSem.Peek();
@@ -535,7 +538,7 @@ public class AttributeGrammar {
                 E0_.nont = t_nterm.E;
 
                 StackSem.Push(E0_);
-
+                GeneratedCode += "\tOR" + "\n";
                 break;
 
             case L_RULE:
@@ -559,7 +562,7 @@ public class AttributeGrammar {
                 L0_._.L.type = s_bool_;
                 L0_.nont = t_nterm.L;
                 StackSem.Push(L0_);
-
+                GeneratedCode += "\tLT" + "\n";
 
                 break;
 
@@ -574,7 +577,7 @@ public class AttributeGrammar {
                 L0_._.L.type = s_bool_;
                 L0_.nont = t_nterm.L;
                 StackSem.Push(L0_);
-
+                GeneratedCode += "\tGT" + "\n";
                 break;
 
             case L_LESS_OR_EQUAL_R_RULE:
@@ -588,7 +591,7 @@ public class AttributeGrammar {
                 L0_._.L.type = s_bool_;
                 L0_.nont = t_nterm.L;
                 StackSem.Push(L0_);
-
+                GeneratedCode += "\tLE" + "\n";
                 break;
 
             case L_GREATER_OR_EQUAL_R_RULE:
@@ -602,7 +605,7 @@ public class AttributeGrammar {
                 L0_._.L.type = s_bool_;
                 L0_.nont = t_nterm.L;
                 StackSem.Push(L0_);
-
+                GeneratedCode += "\tGE" + "\n";
                 break;
 
             case L_EQUAL_EQUAL_R_RULE:
@@ -616,7 +619,7 @@ public class AttributeGrammar {
                 L0_._.L.type = s_bool_;
                 L0_.nont = t_nterm.L;
                 StackSem.Push(L0_);
-
+                GeneratedCode += "\tEQ" + "\n";
                 break;
 
             case L_NOT_EQUAL_R_RULE:
@@ -630,7 +633,7 @@ public class AttributeGrammar {
                 L0_._.L.type = s_bool_;
                 L0_.nont = t_nterm.L;
                 StackSem.Push(L0_);
-
+                GeneratedCode += "\tNE" + "\n";
                 break;
 
             case R_RULE:
@@ -658,7 +661,7 @@ public class AttributeGrammar {
                 R0_._.R.type = R1_._.R.type;
                 R0_.nont = t_nterm.R;
                 StackSem.Push(R0_);
-
+                GeneratedCode += "\tADD" + "\n";
                 break;
 
             case R_MINUS_TM_RULE:
@@ -676,7 +679,7 @@ public class AttributeGrammar {
                 R0_._.R.type = R1_._.R.type;
                 R0_.nont = t_nterm.R;
                 StackSem.Push(R0_);
-
+                GeneratedCode += "\tSUB" + "\n";
                 break;
 
             case TM_RULE:
@@ -704,7 +707,7 @@ public class AttributeGrammar {
                 TM0_._.TM.type = TM1_._.TM.type;
                 TM0_.nont = t_nterm.TM;
                 StackSem.Push(TM0_);
-
+                GeneratedCode += "\tMUL" + "\n";
                 break;
 
             case TM_DIVIDE_F_RULE:
@@ -722,7 +725,7 @@ public class AttributeGrammar {
                 TM0_._.TM.type = TM1_._.TM.type;
                 TM0_.nont = t_nterm.TM;
                 StackSem.Push(TM0_);
-
+                GeneratedCode += "\tDIV" + "\n";
                 break;
 
             case F_RULE:
@@ -742,7 +745,7 @@ public class AttributeGrammar {
 
                 F_.nont = t_nterm.F;
                 StackSem.Push(F_);
-
+                GeneratedCode += $"\tDE_REF {F_.nont} \n";
                 break;
 
             case PLUS_PLUS_LV_RULE:
@@ -756,7 +759,8 @@ public class AttributeGrammar {
                 F_._.F.type = s_int_;
                 F_.nont = t_nterm.F;
                 StackSem.Push(F_);
-
+                GeneratedCode += "\tDUP\n\tDUP\n\tDE_REF 1" + "\n";
+                GeneratedCode += "\tINC\n\tSTORE REF 1\n\tDE_REF 1" + "\n";
                 break;
 
             case MINUS_MINUS_LV_RULE:
@@ -770,7 +774,8 @@ public class AttributeGrammar {
                 F_._.F.type = s_int_;
                 F_.nont = t_nterm.F;
                 StackSem.Push(F_);
-
+                GeneratedCode += "\tDUP\n\tDUP\n\tDE_REF 1" + "\n";
+                GeneratedCode += "\tDEC\n\tSTORE_REF 1\n\tDE_REF 1" + "\n";
                 break;
 
             case LV_PLUS_PLUS_RULE:
@@ -784,7 +789,9 @@ public class AttributeGrammar {
                 F_._.F.type = s_int_;
                 F_.nont = t_nterm.F;
                 StackSem.Push(F_);
-
+                GeneratedCode += ("\tDUP\n\tDUP\n\tDE_REF 1" + "\n");
+                GeneratedCode += ("\tINC\n\tSTORE_REF 1\n\tDE_REF 1" + "\n");
+                GeneratedCode += ("\tDEC" + "\n");
 
                 break;
 
@@ -799,7 +806,9 @@ public class AttributeGrammar {
                 F_._.F.type = s_int_;
                 F_.nont = t_nterm.F;
                 StackSem.Push(F_);
-
+                GeneratedCode += ("\tDUP\n\tDUP\n\tDE_REF 1" + "\n");
+                GeneratedCode += ("\tDEC\n\tSTORE_REF 1\n\tDE_REF 1" + "\n");
+                GeneratedCode += ("\tINC" + "\n");
 
                 break;
 
@@ -814,7 +823,7 @@ public class AttributeGrammar {
                 F0_._.F.type = s_int_;
                 F0_.nont = t_nterm.F;
                 StackSem.Push(F0_);
-
+                GeneratedCode += ("\tNEG" + "\n");
                 break;
 
             case NOT_F_RULE:
@@ -828,7 +837,7 @@ public class AttributeGrammar {
                 F0_._.F.type = s_int_;
                 F0_.nont = t_nterm.F;
                 StackSem.Push(F0_);
-
+                GeneratedCode += ("\tNOT" + "\n");
                 break;
 
             case NT_TRUE_RULE:
@@ -838,7 +847,7 @@ public class AttributeGrammar {
                 F_._.F.type = s_bool_;
                 F_.nont = t_nterm.F;
                 StackSem.Push(F_);
-
+                GeneratedCode += "\tLOAD_TRUE" + "\n";
                 break;
 
             case NT_FALSE_RULE:
@@ -848,7 +857,7 @@ public class AttributeGrammar {
                 F_._.F.type = s_bool_;
                 F_.nont = t_nterm.F;
                 StackSem.Push(F_);
-
+                GeneratedCode += "\tLOAD_FALSE" + "\n";
                 break;
 
             case NT_CHR_RULE:
@@ -858,7 +867,7 @@ public class AttributeGrammar {
                 F_._.F.type = s_char_;
                 F_.nont = t_nterm.F;
                 StackSem.Push(F_);
-
+                GeneratedCode += ($"\tLOAD_CONST {F_.nont}\n");
                 break;
 
             case NT_STR_RULE:
@@ -1165,7 +1174,7 @@ public enum ErrorCode {
 
 public class ObjectStruct {
     public int nName { get; set; }
-    public ObjectStruct pNext { get; set; } = new();
+    public ObjectStruct pNext { get; set; }
     public t_kind eKind { get; set; }
     public ObjectFields _ { get; set; } = new();
 }
